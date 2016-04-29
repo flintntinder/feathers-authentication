@@ -4,7 +4,7 @@ import errors from 'feathers-errors';
 const debug = Debug('feathers-authentication:middleware');
 const THIRTY_SECONDS = 30000;
 
-// Usually this is a big no no but passport requires the 
+// Usually this is a big no no but passport requires the
 // request object to inspect req.body and req.query so we
 // need to miss behave a bit. Don't do this in your own code!
 export let exposeConnectMiddleware = function(req, res, next) {
@@ -34,7 +34,7 @@ export let normalizeAuthToken = function(options = {}) {
 
   return function(req, res, next) {
     let token = req.headers[options.header];
-    
+
     // Check the header for the token (preferred method)
     if (token) {
       // if the value contains "bearer" or "Bearer" then cut that part out
@@ -82,26 +82,20 @@ export let successfulLogin = function(options = {}) {
       // clear any previous JWT cookie
       res.clearCookie(options.cookie.name);
 
-      // Only send back cookies when not in production or when in production and using HTTPS
-      if (!req.secure && process.env.NODE_ENV === 'production') {
-        console.error(`You should be using HTTPS in production! Refusing to send JWT in a cookie`);
+      const cookieOptions = Object.assign({}, options.cookie, { path: options.successRedirect });
+
+      // If a custom expiry wasn't passed then set the expiration to be 30 seconds from now.
+      if (cookieOptions.expires === undefined) {
+        const expiry = new Date();
+        expiry.setTime(expiry.getTime() + THIRTY_SECONDS);
+        cookieOptions.expires = expiry;
       }
-      else {
-        const cookieOptions = Object.assign({}, options.cookie, { path: options.successRedirect });
 
-        // If a custom expiry wasn't passed then set the expiration to be 30 seconds from now.
-        if (cookieOptions.expires === undefined) {
-          const expiry = new Date();
-          expiry.setTime(expiry.getTime() + THIRTY_SECONDS);
-          cookieOptions.expires = expiry;
-        }
-
-        if ( !(cookieOptions.expires instanceof Date) ) {
-          throw new Error('cookie.expires must be a valid Date object');
-        }
-
-        res.cookie(options.cookie.name, res.data.token, cookieOptions);
+      if ( !(cookieOptions.expires instanceof Date) ) {
+        throw new Error('cookie.expires must be a valid Date object');
       }
+
+      res.cookie(options.cookie.name, res.data.token, cookieOptions);
     }
 
     // Redirect to our success route
@@ -139,7 +133,7 @@ export let failedLogin = function(options = {}) {
 
 export let setupSocketIOAuthentication = function(app, options = {}) {
   options = Object.assign({}, options);
-  
+
   debug('Setting up Socket.io authentication middleware with options:', options);
 
   return function(socket) {
@@ -178,7 +172,7 @@ export let setupSocketIOAuthentication = function(app, options = {}) {
       // Authenticate the user using local auth strategy
       else {
         // Put our data in a fake req.body object to get local auth
-        // with Passport to work because it checks res.body for the 
+        // with Passport to work because it checks res.body for the
         // username and password.
         let params = {
           provider: 'socketio',
@@ -206,7 +200,7 @@ export let setupSocketIOAuthentication = function(app, options = {}) {
         debug('There was an error logging out', error);
         return callback(new Error('There was an error logging out'));
       }
-      
+
       callback();
     });
   };
@@ -250,7 +244,7 @@ export let setupPrimusAuthentication = function(app, options = {}) {
       // Authenticate the user using local auth strategy
       else {
         // Put our data in a fake req.body object to get local auth
-        // with Passport to work because it checks res.body for the 
+        // with Passport to work because it checks res.body for the
         // username and password.
         let params = {
           provider: 'primus',
@@ -278,7 +272,7 @@ export let setupPrimusAuthentication = function(app, options = {}) {
         debug('There was an error logging out', error);
         return callback(new Error('There was an error logging out'));
       }
-      
+
       callback();
     });
   };
