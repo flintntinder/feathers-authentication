@@ -11,14 +11,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/feathersjs/feathers-authentication.git"
+    "url": "git://github.com/flintntinder/feathers-authentication.git"
   },
   "author": {
     "name": "Feathers contributors",
     "email": "hello@feathersjs.com",
     "url": "https://feathersjs.com"
   },
-  "contributors": [],
+  "contributors": [ "willemlabu" ],
   "bugs": {
     "url": "https://github.com/feathersjs/feathers-authentication/issues"
   },
