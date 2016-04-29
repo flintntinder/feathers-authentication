@@ -27,5 +27,6 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 
-lib/
+# willemlabu: Removing this from the ignore file because I forked it
+# lib/
 data.db
